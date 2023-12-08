@@ -1,4 +1,4 @@
-package com.example.emcontacts.AdminRetrievalScreen
+package com.example.emcontacts.admin
 
 
 import android.annotation.SuppressLint
@@ -39,8 +39,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -48,7 +48,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.emcontacts.interfaces.DrawerComponent
 import com.example.emcontacts.interfaces.Municipality
-import com.example.emcontacts.ui.theme.EMContactsTheme
 import com.example.emcontacts.utils.SmsUtils
 import com.google.firebase.database.*
 import com.google.firebase.firestore.ktx.firestore
@@ -70,7 +69,7 @@ import com.example.emcontacts.utils.LocationUtils
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 @Composable
-fun HeaderComponentMedic(navController: NavController?, finalMunicipalityForm: String) {
+fun FirefightersHeaderComponent(navController: NavController?, finalMunicipalityForm: String) {
     val showDialog = remember { mutableStateOf(false) }
     val CreatedocumentNewId = remember { mutableStateOf("") }
     val CreatecontactNewId = remember { mutableStateOf("") }
@@ -100,7 +99,7 @@ fun HeaderComponentMedic(navController: NavController?, finalMunicipalityForm: S
                 Row(
                     horizontalArrangement = Arrangement.End,
                     modifier = Modifier.padding(end = 10.dp),
-                    //    verticalAlignment = Alignment.CenterVertically
+                //    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
                         text = "Add a contact number",
@@ -174,7 +173,7 @@ fun HeaderComponentMedic(navController: NavController?, finalMunicipalityForm: S
                             var db = Firebase.firestore
                             db.collection("Emergency Contacts")
                                 .document("$finalMunicipalityForm")
-                                .collection("Medics")
+                                .collection("Firefighters")
                                 .document(CreatedocumentNewId.value)
                                 .set(hashMapOf("contacts" to CreatecontactNewId.value,))
                                 .addOnSuccessListener {
@@ -232,16 +231,16 @@ private fun sendLocationSMS(context: Context, location: Location, phoneNumber: S
 }
 
 
-data class MedicAdmin(
+data class FirefighterAdmin(
     val documentId: String,
     val contactNumber: String,
 )
 
-class MedicViewModel : ViewModel() {
+class EmergencyViewModel : ViewModel() {
 
-    private val _medic = MutableLiveData<List<MedicAdmin>>()
-    private val medicLiveData = MutableLiveData<List<MedicAdmin>>()
-    val medics: LiveData<List<MedicAdmin>> = _medic
+    private val _firefighters = MutableLiveData<List<FirefighterAdmin>>()
+    private val firefightersLiveData = MutableLiveData<List<FirefighterAdmin>>()
+    val firefighters: LiveData<List<FirefighterAdmin>> = _firefighters
 
     private val db = Firebase.firestore
     private val TAG = "FireStore Data Retrieval"
@@ -251,24 +250,24 @@ class MedicViewModel : ViewModel() {
 
         db.collection("Emergency Contacts")
             .document("$finalMunicipalityForm")
-            .collection("Medics")
+            .collection("Firefighters")
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
-                    Log.e(TAG, "Error retrieving medics: ${error.message}", error)
+                    Log.e(TAG, "Error retrieving firefighters: ${error.message}", error)
                     return@addSnapshotListener
                 }
 
-                val medics = mutableListOf<MedicAdmin>()
+                val firefighters = mutableListOf<FirefighterAdmin>()
                 snapshot?.documents?.forEach { document ->
                     val documentId = document.id
                     val contactNumber = document.getString("contacts") ?: ""
-                    medics.add(MedicAdmin(documentId, contactNumber))
+                    firefighters.add(FirefighterAdmin(documentId, contactNumber))
 
-                    Log.d(TAG, "Retrieved medic: $documentId -> $contactNumber")
+                    Log.d(TAG, "Retrieved firefighter: $documentId -> $contactNumber")
                 }
 
-                //    medicLiveData.setValue(medics)
-                _medic.postValue(medics)
+            //    firefightersLiveData.setValue(firefighters)
+                _firefighters.postValue(firefighters)
             }
     }
 
@@ -282,7 +281,7 @@ class MedicViewModel : ViewModel() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 
-fun AdminMedicPage(navController: NavController?, selectedMunicipality: String?) {
+fun AdminFirefightersScreen(navController: NavController?, selectedMunicipality: String?) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val isPreview = LocalInspectionMode.current
     val containerColor = Color(0xFFFFD317)
@@ -315,10 +314,10 @@ fun AdminMedicPage(navController: NavController?, selectedMunicipality: String?)
     // State variable to hold the user's location
     var userLocation by remember { mutableStateOf<Location?>(null) }
 
-    //  var medics = finalMunicipalityForm?.let { getEmergencyPhoneNumber(it) }
+    //  var firefighters = finalMunicipalityForm?.let { getEmergencyPhoneNumber(it) }
 
 
-    val viewModel = MedicViewModel()
+    val viewModel = EmergencyViewModel()
     if (finalMunicipalityForm != null) {
         viewModel.getEmergencyPhoneNumber(finalMunicipalityForm)
     }
@@ -328,7 +327,7 @@ fun AdminMedicPage(navController: NavController?, selectedMunicipality: String?)
         locationHelper.getDeviceLocation { location ->
             userLocation = location
             Log.d(
-                "Location_MedicPage",
+                "Location_ShareFirePage",
                 "Latitude: ${location.latitude}, Longitude: ${location.longitude}"
             )
         }
@@ -343,7 +342,7 @@ fun AdminMedicPage(navController: NavController?, selectedMunicipality: String?)
 
     val mutableNewContactNumber = MutableStateFlow("")
 
-    val newmedicDocument = hashMapOf("contacts" to mutableNewContactNumber.value)
+    val newFirefighterDocument = hashMapOf("contacts" to mutableNewContactNumber.value)
 
 
     ModalNavigationDrawer(
@@ -364,7 +363,7 @@ fun AdminMedicPage(navController: NavController?, selectedMunicipality: String?)
                 modifier = Modifier.padding(10.dp)
             ) {
                 if (finalMunicipalityForm != null) {
-                    HeaderComponentMedic(navController, finalMunicipalityForm)
+                    FirefightersHeaderComponent(navController, finalMunicipalityForm)
                 }
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -401,9 +400,12 @@ fun AdminMedicPage(navController: NavController?, selectedMunicipality: String?)
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "Medic Contact Page",
-                        color = Color.White,
-                        style = LocalTextStyle.current,
+                        text = "Firefighters",
+                        color = Color(0xFFFFFFFF),
+                        style = androidx.compose.ui.text.TextStyle(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp
+                        ),
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(horizontal = 16.dp)
                         // Adjust the horizontal padding as needed
@@ -413,7 +415,7 @@ fun AdminMedicPage(navController: NavController?, selectedMunicipality: String?)
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                val medicsList by viewModel.medics.observeAsState(initial = emptyList())
+                val firefightersList by viewModel.firefighters.observeAsState(initial = emptyList())
 
                 Box(
                     modifier = Modifier
@@ -431,9 +433,9 @@ fun AdminMedicPage(navController: NavController?, selectedMunicipality: String?)
                         item {
 
 
-                            if (medicsList.isEmpty()) {
+                            if (firefightersList.isEmpty()) {
                                 // Show placeholder text or view indicating no data
-                                Log.d("ViewModel", "AdminMedicPage: Empty")
+                                Log.d("ViewModel", "AdminFirePage: Empty")
                                 // Show loading indicator
                                 Box(
                                     modifier = Modifier.fillMaxSize(),
@@ -443,16 +445,16 @@ fun AdminMedicPage(navController: NavController?, selectedMunicipality: String?)
                                 }
 
                             } else {
-                                for (medic in medicsList) {
-                                    val documentId = medic.documentId
-                                    var contactNumber = medic.contactNumber
+                                for (firefighter in firefightersList) {
+                                    val documentId = firefighter.documentId
+                                    var contactNumber = firefighter.contactNumber
                                     var isEditing by remember { mutableStateOf(false) }
                                     Spacer(modifier = Modifier.height(5.dp))
 
                                     Column {
 
                                         Text(
-                                            text = medic.documentId,
+                                            text = firefighter.documentId,
                                             color = Color.Black,
                                             style = LocalTextStyle.current,
                                             modifier = Modifier
@@ -470,7 +472,8 @@ fun AdminMedicPage(navController: NavController?, selectedMunicipality: String?)
                                         ) {
 
 
-                                            val editedContactNumber = remember { mutableStateOf(contactNumber) }
+                                            val editedContactNumber =
+                                                remember { mutableStateOf(contactNumber) }
                                             val showDialog = remember { mutableStateOf(false) }
                                             val textFieldIdValue = remember { mutableStateOf("") }
                                             val textFieldContactValue =
@@ -499,9 +502,9 @@ fun AdminMedicPage(navController: NavController?, selectedMunicipality: String?)
 
                                                 if (showDialog.value) {
 
-                                                    textFieldIdValue.value = medic.documentId
+                                                    textFieldIdValue.value = firefighter.documentId
                                                     textFieldContactValue.value =
-                                                        medic.contactNumber
+                                                        firefighter.contactNumber
 
                                                     AlertDialog(
                                                         onDismissRequest = {
@@ -566,28 +569,37 @@ fun AdminMedicPage(navController: NavController?, selectedMunicipality: String?)
                                                             Button(
                                                                 onClick = {
                                                                     // Handle the form submission
-                                                                    if (medic.documentId != textFieldIdValue.value || medic.contactNumber != textFieldContactValue.value) {
+                                                                    if (firefighter.documentId != textFieldIdValue.value || firefighter.contactNumber != textFieldContactValue.value) {
                                                                         val db = Firebase.firestore
 
                                                                         // Check if document ID is untainted
                                                                         val docRef =
                                                                             db.collection("Emergency Contacts")
                                                                                 .document("$finalMunicipalityForm")
-                                                                                .collection("Medics")
+                                                                                .collection("Firefighters")
                                                                                 .document(
-                                                                                    medic.documentId
+                                                                                    firefighter.documentId
                                                                                 )
                                                                         docRef.get()
                                                                             .addOnSuccessListener { snapshot ->
                                                                                 if (snapshot.exists()) {
                                                                                     // Document exists and is not tainted
-                                                                                    if (medic.documentId != textFieldIdValue.value) {
+                                                                                    if (firefighter.documentId != textFieldIdValue.value) {
 
                                                                                         // Document ID changed, delete and re-insert with updated data
-                                                                                        db.collection("Emergency Contacts")
-                                                                                            .document("$finalMunicipalityForm")
-                                                                                            .collection("Medics")
-                                                                                            .document(medic.documentId)
+                                                                                        db
+                                                                                            .collection(
+                                                                                                "Emergency Contacts"
+                                                                                            )
+                                                                                            .document(
+                                                                                                "$finalMunicipalityForm"
+                                                                                            )
+                                                                                            .collection(
+                                                                                                "Firefighters"
+                                                                                            )
+                                                                                            .document(
+                                                                                                firefighter.documentId
+                                                                                            )
                                                                                             .delete()
                                                                                             .addOnSuccessListener {
 
@@ -596,29 +608,51 @@ fun AdminMedicPage(navController: NavController?, selectedMunicipality: String?)
                                                                                                     "Document deleted successfully"
                                                                                                 )
                                                                                                 // Insert new data with updated document ID and contact number
-                                                                                                var newDocumentId = textFieldIdValue.value
-                                                                                                var contactNumber = textFieldContactValue.value
+                                                                                                var newDocumentId =
+                                                                                                    textFieldIdValue.value
+                                                                                                var contactNumber =
+                                                                                                    textFieldContactValue.value
 
                                                                                                 if (contactNumber.isEmpty()) {
                                                                                                     // Use the existing contact number
-                                                                                                    contactNumber = medic.contactNumber
-                                                                                                    //   newDocumentId = medic.documentId
+                                                                                                    contactNumber =
+                                                                                                        firefighter.contactNumber
+                                                                                                    //   newDocumentId = firefighter.documentId
                                                                                                 }
 
-                                                                                                db.collection("Emergency Contacts")
-                                                                                                    .document("$finalMunicipalityForm")
-                                                                                                    .collection("Medics")
-                                                                                                    .document(textFieldIdValue.value)
-                                                                                                    .set(hashMapOf("contacts" to textFieldContactValue.value))
+                                                                                                db.collection(
+                                                                                                    "Emergency Contacts"
+                                                                                                )
+                                                                                                    .document(
+                                                                                                        "$finalMunicipalityForm"
+                                                                                                    )
+                                                                                                    .collection(
+                                                                                                        "Firefighters"
+                                                                                                    )
+                                                                                                    .document(
+                                                                                                        newDocumentId
+                                                                                                    )
+                                                                                                    .set(
+                                                                                                        hashMapOf(
+                                                                                                            "contacts" to contactNumber,
+                                                                                                        )
+                                                                                                    )
                                                                                                     .addOnSuccessListener {
                                                                                                         Log.d(
                                                                                                             "InsertDocument",
                                                                                                             "New document inserted successfully"
                                                                                                         )
-                                                                                                        textFieldIdValue.value = ""
-                                                                                                        textFieldContactValue.value = ""
-                                                                                                        showDialog.value = false
-                                                                                                        Toast.makeText(context, "Document updated successfully", Toast.LENGTH_SHORT)
+                                                                                                        textFieldIdValue.value =
+                                                                                                            ""
+                                                                                                        textFieldContactValue.value =
+                                                                                                            ""
+                                                                                                        showDialog.value =
+                                                                                                            false
+                                                                                                        Toast.makeText(
+                                                                                                            context,
+                                                                                                            "Document updated successfully",
+                                                                                                            Toast.LENGTH_SHORT
+                                                                                                        )
                                                                                                             .show()
 
                                                                                                     }
@@ -641,20 +675,38 @@ fun AdminMedicPage(navController: NavController?, selectedMunicipality: String?)
 
 
                                                                                         // Only contact number changed, update existing document
-                                                                                        db.collection("Emergency Contacts")
-                                                                                            .document("$finalMunicipalityForm")
-                                                                                            .collection("Medics")
-                                                                                            .document(medic.documentId)
-                                                                                            .update("contacts", textFieldContactValue.value)
+                                                                                        db.collection(
+                                                                                            "Emergency Contacts"
+                                                                                        )
+                                                                                            .document(
+                                                                                                "$finalMunicipalityForm"
+                                                                                            )
+                                                                                            .collection(
+                                                                                                "Firefighters"
+                                                                                            )
+                                                                                            .document(
+                                                                                                firefighter.documentId
+                                                                                            )
+                                                                                            .update(
+                                                                                                "contacts",
+                                                                                                textFieldContactValue.value
+                                                                                            )
                                                                                             .addOnSuccessListener {
                                                                                                 Log.d(
                                                                                                     "UpdateContact",
                                                                                                     "Contact number updated successfully"
                                                                                                 )
-                                                                                                showDialog.value = false
-                                                                                                textFieldIdValue.value = ""
-                                                                                                textFieldContactValue.value = ""
-                                                                                                Toast.makeText(context, "Contact number updated successfully", Toast.LENGTH_SHORT)
+                                                                                                showDialog.value =
+                                                                                                    false
+                                                                                                textFieldIdValue.value =
+                                                                                                    ""
+                                                                                                textFieldContactValue.value =
+                                                                                                    ""
+                                                                                                Toast.makeText(
+                                                                                                    context,
+                                                                                                    "Contact number updated successfully",
+                                                                                                    Toast.LENGTH_SHORT
+                                                                                                )
                                                                                                     .show()
                                                                                             }
                                                                                             .addOnFailureListener { e ->
@@ -700,7 +752,7 @@ fun AdminMedicPage(navController: NavController?, selectedMunicipality: String?)
 
                                                 } else {
                                                     androidx.compose.material3.Text(
-                                                        text = medic.contactNumber,
+                                                        text = firefighter.contactNumber,
                                                         color = Color.Black,
                                                         style = LocalTextStyle.current
                                                     )
@@ -713,7 +765,7 @@ fun AdminMedicPage(navController: NavController?, selectedMunicipality: String?)
                                                 contentDescription = null,
                                                 tint = Color.Black,
                                                 modifier = Modifier
-                                                    .size(24.dp)
+                                                    .size(40.dp)
                                                     .clickable {
                                                         // Delete the contact number from Firestore
                                                         if (finalMunicipalityForm != null) {
@@ -722,8 +774,8 @@ fun AdminMedicPage(navController: NavController?, selectedMunicipality: String?)
                                                             db
                                                                 .collection("Emergency Contacts")
                                                                 .document("$finalMunicipalityForm")
-                                                                .collection("Medics")
-                                                                .document(medic.documentId)
+                                                                .collection("Firefighters")
+                                                                .document(firefighter.documentId)
                                                                 .delete()
                                                                 .addOnSuccessListener {
                                                                     Log.d(
@@ -731,13 +783,11 @@ fun AdminMedicPage(navController: NavController?, selectedMunicipality: String?)
                                                                         "Number deleted successfully"
                                                                     )
                                                                     isEditing = false
-                                                                    Toast
-                                                                        .makeText(
-                                                                            context,
-                                                                            "Number Deleted Successfully",
-                                                                            Toast.LENGTH_SHORT
-                                                                        )
-                                                                        .show()
+                                                                    Toast.makeText(
+                                                                        context,
+                                                                        "Number Deleted Successfully",
+                                                                        Toast.LENGTH_SHORT
+                                                                    ).show()
                                                                 }
                                                                 .addOnFailureListener { e ->
                                                                     Log.e(
@@ -752,6 +802,7 @@ fun AdminMedicPage(navController: NavController?, selectedMunicipality: String?)
                                                     }
                                             )
 
+                                            Spacer(modifier = Modifier.width(2.dp))
 
                                             Icon(
                                                 imageVector = Icons.Default.LocationOn,
@@ -816,15 +867,5 @@ fun AdminMedicPage(navController: NavController?, selectedMunicipality: String?)
             }
         }
 
-    }
-}
-
-
-@Preview
-@Composable
-fun AdminMedicPagePreview() {
-    EMContactsTheme {
-        // Replace null with the selected municipality for preview
-        AdminMedicPage(navController = null, selectedMunicipality = null)
     }
 }

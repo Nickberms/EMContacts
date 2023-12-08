@@ -38,7 +38,6 @@ import com.example.emcontacts.interfaces.MunicipalityMap
 import com.example.emcontacts.interfaces.PoliceButton
 import com.example.emcontacts.interfaces.RescuersButton
 
-
 @Composable
 fun AdminHomeScreen(navController: NavController?) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
@@ -51,7 +50,6 @@ fun AdminHomeScreen(navController: NavController?) {
                 selectedMunicipality = municipality
                 Log.d("LOCATION_ADMIN", "HomeScreen: $municipality")
             }
-
         }
     ) {
         Box(
@@ -67,7 +65,7 @@ fun AdminHomeScreen(navController: NavController?) {
                 selectedMunicipality?.let { municipality ->
                     MunicipalityMap(
                         modifier = Modifier
-                            .fillMaxHeight(0.3f), // 30% of the screen height
+                            .fillMaxHeight(0.3f),
                         municipality = municipality
                     )
                 }
@@ -79,7 +77,7 @@ fun AdminHomeScreen(navController: NavController?) {
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "EMERGENCY CONTACTS",
+                        text = "EMERGENCY CONTACTS ",
                         color = Color(0xFFFFFFFF),
                         style = androidx.compose.ui.text.TextStyle(
                             fontWeight = FontWeight.Bold,
@@ -103,17 +101,17 @@ fun AdminHomeScreen(navController: NavController?) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(200.dp)
+                                .height(150.dp)
                         ) {
                             Box(
                                 modifier = Modifier
                                     .weight(1f)
                                     .padding(end = 4.dp)
-                                    .background(Color(0xFFADD8E6))
+                                    .background(Color(0xFF4BBDFF))
                             ) {
                                 MedicsButton {
                                     selectedMunicipality?.let { municipality ->
-                                        navController?.navigate("${Screen.AdminMedicPage.route}/${municipality.name}")
+                                        navController?.navigate("${Screen.AdminMedicsScreen.route}/${municipality.name}")
                                     }
                                 }
                             }
@@ -121,11 +119,11 @@ fun AdminHomeScreen(navController: NavController?) {
                                 modifier = Modifier
                                     .weight(1f)
                                     .padding(end = 4.dp)
-                                    .background(Color.Gray)
+                                    .background(Color(0xFFFA876B))
                             ) {
-                                PoliceButton {
+                                FirefightersButton {
                                     selectedMunicipality?.let { municipality ->
-                                        navController?.navigate("${Screen.AdminPolicePage.route}/${municipality.name}")
+                                        navController?.navigate("${Screen.AdminFirefightersScreen.route}/${municipality.name}")
                                     }
                                 }
                             }
@@ -134,17 +132,17 @@ fun AdminHomeScreen(navController: NavController?) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(200.dp)
+                                .height(150.dp)
                         ) {
                             Box(
                                 modifier = Modifier
                                     .weight(1f)
                                     .padding(end = 4.dp)
-                                    .background(Color.Green)
+                                    .background(Color(0xFFBDC1CA))
                             ) {
-                                RescuersButton {
+                                PoliceButton {
                                     selectedMunicipality?.let { municipality ->
-                                        navController?.navigate("${Screen.AdminRescuePage.route}/${municipality.name}")
+                                        navController?.navigate("${Screen.AdminPoliceScreen.route}/${municipality.name}")
                                     }
                                 }
                             }
@@ -152,11 +150,11 @@ fun AdminHomeScreen(navController: NavController?) {
                                 modifier = Modifier
                                     .weight(1f)
                                     .padding(end = 4.dp)
-                                    .background(Color.Red)
+                                    .background(Color(0xFF4CE77F))
                             ) {
-                                FirefightersButton {
+                                RescuersButton {
                                     selectedMunicipality?.let { municipality ->
-                                        navController?.navigate("${Screen.AdminFirePage.route}/${municipality.name}")
+                                        navController?.navigate("${Screen.AdminRescuersScreen.route}/${municipality.name}")
                                     }
                                 }
                             }

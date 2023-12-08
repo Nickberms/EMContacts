@@ -1,4 +1,4 @@
-package com.example.emcontacts.screens
+package com.example.emcontacts
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -43,8 +43,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.emcontacts.R
-import com.example.emcontacts.Screen
 import com.google.firebase.auth.FirebaseAuth
 
 @RequiresApi(Build.VERSION_CODES.O)

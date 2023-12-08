@@ -1,4 +1,4 @@
-package com.example.emcontacts.screens
+package com.example.emcontacts
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -29,7 +29,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.emcontacts.Screen
 import com.example.emcontacts.interfaces.DrawerComponent
 import com.example.emcontacts.interfaces.FirefightersButton
 import com.example.emcontacts.interfaces.HomeHeader

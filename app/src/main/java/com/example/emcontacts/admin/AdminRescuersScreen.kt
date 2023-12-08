@@ -1,4 +1,4 @@
-package com.example.emcontacts.AdminRetrievalScreen
+package com.example.emcontacts.admin
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -38,7 +38,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -47,7 +46,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.emcontacts.interfaces.DrawerComponent
 import com.example.emcontacts.interfaces.Municipality
-import com.example.emcontacts.ui.theme.EMContactsTheme
 import com.example.emcontacts.utils.SmsUtils
 import com.google.firebase.database.*
 import com.google.firebase.firestore.ktx.firestore
@@ -69,7 +67,7 @@ import com.example.emcontacts.utils.LocationUtils
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 @Composable
-fun HeaderComponentRescue(navController: NavController?, finalMunicipalityForm: String) {
+fun RescuersHeaderComponent(navController: NavController?, finalMunicipalityForm: String) {
     val showDialog = remember { mutableStateOf(false) }
     val CreatedocumentNewId = remember { mutableStateOf("") }
     val CreatecontactNewId = remember { mutableStateOf("") }
@@ -281,7 +279,7 @@ class RescueViewModel : ViewModel() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 
-fun AdminRescuePage(navController: NavController?, selectedMunicipality: String?) {
+fun AdminRescuersScreen(navController: NavController?, selectedMunicipality: String?) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val isPreview = LocalInspectionMode.current
     val containerColor = Color(0xFFFFD317)
@@ -363,7 +361,7 @@ fun AdminRescuePage(navController: NavController?, selectedMunicipality: String?
                 modifier = Modifier.padding(10.dp)
             ) {
                 if (finalMunicipalityForm != null) {
-                    HeaderComponentRescue(navController, finalMunicipalityForm)
+                    RescuersHeaderComponent(navController, finalMunicipalityForm)
                 }
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -815,15 +813,5 @@ fun AdminRescuePage(navController: NavController?, selectedMunicipality: String?
             }
         }
 
-    }
-}
-
-
-@Preview
-@Composable
-fun AdminRescuePagePreview() {
-    EMContactsTheme {
-        // Replace null with the selected municipality for preview
-        AdminRescuePage(navController = null, selectedMunicipality = null)
     }
 }

@@ -18,14 +18,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.emcontacts.AdminRetrievalScreen.AdminFirePage
-import com.example.emcontacts.AdminRetrievalScreen.AdminMedicPage
-import com.example.emcontacts.AdminRetrievalScreen.AdminRescuePage
+import com.example.emcontacts.admin.AdminFirefightersScreen
+import com.example.emcontacts.admin.AdminMedicsScreen
+import com.example.emcontacts.admin.AdminRescuersScreen
 import com.example.emcontacts.admin.AdminHomeScreen
-import com.example.emcontacts.admin.AdminPolicePage
+import com.example.emcontacts.admin.AdminPoliceScreen
 
-import com.example.emcontacts.screens.AdminLoginScreen
-import com.example.emcontacts.screens.HomeScreen
 import com.example.emcontacts.ui.theme.EMContactsTheme
 
 import com.google.firebase.FirebaseApp
@@ -44,10 +42,10 @@ sealed class Screen(val route: String) {
 
 
 
-    object AdminMedicPage : Screen("AdminMedicPage")
-    object AdminFirePage : Screen("AdminFirePage")
-    object AdminPolicePage : Screen("AdminPolicePage")
-    object AdminRescuePage : Screen("AdminRescuePage")
+    object AdminMedicsScreen : Screen("AdminMedicPage")
+    object AdminFirefightersScreen : Screen("AdminFirePage")
+    object AdminPoliceScreen : Screen("AdminPolicePage")
+    object AdminRescuersScreen : Screen("AdminRescuePage")
 
 
 
@@ -166,35 +164,35 @@ class MainActivity : ComponentActivity() {
 
 
                     composable(
-                        route = "${Screen.AdminMedicPage.route}/{municipalityName}",
+                        route = "${Screen.AdminMedicsScreen.route}/{municipalityName}",
                         arguments = listOf(navArgument("municipalityName") { type = NavType.StringType })
                     ) { backStackEntry ->
                         val municipalityName = backStackEntry.arguments?.getString("municipalityName")
-                        AdminMedicPage(navController = navController, selectedMunicipality = municipalityName)
+                        AdminMedicsScreen(navController = navController, selectedMunicipality = municipalityName)
                     }
 
                     composable(
-                        route = "${Screen.AdminFirePage.route}/{municipalityName}",
+                        route = "${Screen.AdminFirefightersScreen.route}/{municipalityName}",
                         arguments = listOf(navArgument("municipalityName") { type = NavType.StringType })
                     ) { backStackEntry ->
                         val municipalityName = backStackEntry.arguments?.getString("municipalityName")
-                        AdminFirePage(navController = navController, selectedMunicipality = municipalityName)
+                        AdminFirefightersScreen(navController = navController, selectedMunicipality = municipalityName)
                     }
 
                     composable(
-                        route = "${Screen.AdminPolicePage.route}/{municipalityName}",
+                        route = "${Screen.AdminPoliceScreen.route}/{municipalityName}",
                         arguments = listOf(navArgument("municipalityName") { type = NavType.StringType })
                     ) { backStackEntry ->
                         backStackEntry.arguments?.getString("municipalityName")
-                        AdminPolicePage()
+                        AdminPoliceScreen()
                     }
 
                     composable(
-                        route = "${Screen.AdminRescuePage.route}/{municipalityName}",
+                        route = "${Screen.AdminRescuersScreen.route}/{municipalityName}",
                         arguments = listOf(navArgument("municipalityName") { type = NavType.StringType })
                     ) { backStackEntry ->
                         val municipalityName = backStackEntry.arguments?.getString("municipalityName")
-                        AdminRescuePage(navController = navController, selectedMunicipality = municipalityName)
+                        AdminRescuersScreen(navController = navController, selectedMunicipality = municipalityName)
                     }
 
 

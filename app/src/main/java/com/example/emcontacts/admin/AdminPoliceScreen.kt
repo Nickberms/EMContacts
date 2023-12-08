@@ -62,7 +62,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 @Composable
-fun HeaderComponent(finalMunicipalityForm: String) {
+fun PoliceHeaderComponent(finalMunicipalityForm: String) {
     val showDialog = remember { mutableStateOf(false) }
     val createNewDocument = remember { mutableStateOf("") }
     val createNewNumber = remember { mutableStateOf("") }
@@ -168,7 +168,7 @@ fun HeaderComponent(finalMunicipalityForm: String) {
     "StateFlowValueCalledInComposition"
 )
 @Composable
-fun AdminPolicePage() {
+fun AdminPoliceScreen() {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     LocalInspectionMode.current
     val containerColor = Color(0xFFFFD317)
@@ -219,7 +219,7 @@ fun AdminPolicePage() {
                 modifier = Modifier.padding(10.dp)
             ) {
                 if (defaultMunicipalityName != null) {
-                    HeaderComponent(defaultMunicipalityName)
+                    PoliceHeaderComponent(defaultMunicipalityName)
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 selectedMunicipality?.let {
