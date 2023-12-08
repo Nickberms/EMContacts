@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "504367459114",
+    "project_id": "em-contacts-61178",
+    "storage_bucket": "em-contacts-61178.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:504367459114:android:76872432066dafcd41cc53",
+        "android_client_info": {
+          "package_name": "com.example.emcontacts"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDweIl1dyqtWhXA61zQj1yogb25aloV24Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
