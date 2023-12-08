@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     app:startDestination="@id/homeFragment">
-
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.example.screens.contactPage"
@@ -13,7 +12,6 @@
             android:id="@+id/action_homeFragment_to_newPageScreen"
             app:destination="@id/newPageScreen" />
     </fragment>
-
     <fragment
         android:id="@+id/newPageScreen"
         android:name="com.example.NewPageScreen"

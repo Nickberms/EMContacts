@@ -11,7 +11,6 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.core.app.ActivityCompat
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -23,37 +22,22 @@ import com.example.emcontacts.admin.AdminHomeScreen
 import com.example.emcontacts.admin.AdminMedicsScreen
 import com.example.emcontacts.admin.AdminPoliceScreen
 import com.example.emcontacts.admin.AdminRescuersScreen
-
 import com.example.emcontacts.ui.theme.EMContactsTheme
-
 import com.google.firebase.FirebaseApp
 
 sealed class Screen(val route: String) {
-
     object AdminLogin : Screen("admin_login")
     object AdminHomeScreen : Screen("adminHome")
-
-
     object Home : Screen("home")
     object MedicsScreen : Screen("MedicsScreen")
     object FirefightersScreen : Screen("FirefightersScreen")
     object PoliceScreen : Screen("PoliceScreen")
     object RescuersScreen : Screen("RescuersScreen")
-
-
-
     object AdminMedicsScreen : Screen("AdminMedicPage")
     object AdminFirefightersScreen : Screen("AdminFirePage")
     object AdminPoliceScreen : Screen("AdminPolicePage")
     object AdminRescuersScreen : Screen("AdminRescuePage")
-
-
-
-
-
 }
-
-
 
 class MainActivity : ComponentActivity() {
     private val REQUEST_LOCATION_PERMISSION = 1
@@ -76,6 +60,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @Deprecated("Deprecated in Java")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -103,63 +88,48 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-
     @RequiresApi(Build.VERSION_CODES.O)
-    @OptIn(ExperimentalMaterial3Api::class)
     private fun startApp() {
         FirebaseApp.initializeApp(this)
         Log.d("Firebase", "Firebase initialized successfully")
-
         setContent {
             val navController = rememberNavController()
             EMContactsTheme {
-
                 NavHost(navController = navController, startDestination = Screen.Home.route) {
-
                     composable(Screen.Home.route) {
                         HomeScreen(navController)
                     }
-
                     composable(Screen.AdminHomeScreen.route) {
                         AdminHomeScreen(navController)
                     }
-
                     composable(Screen.AdminLogin.route) {
                         AdminLoginScreen(navController)
                     }
-
-
-
                     composable(
                         route = "${Screen.MedicsScreen.route}/{municipalityName}",
                         arguments = listOf(navArgument("municipalityName") {
                             type = NavType.StringType
                         })
                     ) { backStackEntry ->
-                        val municipalityName =
-                            backStackEntry.arguments?.getString("municipalityName")
+                        backStackEntry.arguments?.getString("municipalityName")
                         MedicSscreen()
                     }
-
                     composable(
                         route = "${Screen.FirefightersScreen.route}/{municipalityName}",
                         arguments = listOf(navArgument("municipalityName") {
                             type = NavType.StringType
                         })
                     ) { backStackEntry ->
-                        val municipalityName =
-                            backStackEntry.arguments?.getString("municipalityName")
+                        backStackEntry.arguments?.getString("municipalityName")
                         FirefightersScreen()
                     }
-
                     composable(
                         route = "${Screen.PoliceScreen.route}/{municipalityName}",
                         arguments = listOf(navArgument("municipalityName") {
                             type = NavType.StringType
                         })
                     ) { backStackEntry ->
-                        val municipalityName =
-                            backStackEntry.arguments?.getString("municipalityName")
+                        backStackEntry.arguments?.getString("municipalityName")
                         PoliceScreen()
                     }
                     composable(
@@ -168,36 +138,27 @@ class MainActivity : ComponentActivity() {
                             type = NavType.StringType
                         })
                     ) { backStackEntry ->
-                        val municipalityName =
-                            backStackEntry.arguments?.getString("municipalityName")
+                        backStackEntry.arguments?.getString("municipalityName")
                         RescuerScreen()
                     }
-
-
-
-
                     composable(
                         route = "${Screen.AdminMedicsScreen.route}/{municipalityName}",
                         arguments = listOf(navArgument("municipalityName") {
                             type = NavType.StringType
                         })
                     ) { backStackEntry ->
-                        val municipalityName =
-                            backStackEntry.arguments?.getString("municipalityName")
+                        backStackEntry.arguments?.getString("municipalityName")
                         AdminMedicsScreen()
                     }
-
                     composable(
                         route = "${Screen.AdminFirefightersScreen.route}/{municipalityName}",
                         arguments = listOf(navArgument("municipalityName") {
                             type = NavType.StringType
                         })
                     ) { backStackEntry ->
-                        val municipalityName =
-                            backStackEntry.arguments?.getString("municipalityName")
+                        backStackEntry.arguments?.getString("municipalityName")
                         AdminFirefightersScreen()
                     }
-
                     composable(
                         route = "${Screen.AdminPoliceScreen.route}/{municipalityName}",
                         arguments = listOf(navArgument("municipalityName") {
@@ -207,22 +168,16 @@ class MainActivity : ComponentActivity() {
                         backStackEntry.arguments?.getString("municipalityName")
                         AdminPoliceScreen()
                     }
-
                     composable(
                         route = "${Screen.AdminRescuersScreen.route}/{municipalityName}",
                         arguments = listOf(navArgument("municipalityName") {
                             type = NavType.StringType
                         })
                     ) { backStackEntry ->
-                        val municipalityName =
-                            backStackEntry.arguments?.getString("municipalityName")
+                        backStackEntry.arguments?.getString("municipalityName")
                         AdminRescuersScreen()
-
-
                     }
-
                 }
-
             }
         }
     }
