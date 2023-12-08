@@ -1,10 +1,10 @@
 package com.example.emcontacts.admin
+
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.location.Location
 import android.net.Uri
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -14,7 +14,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
@@ -59,6 +58,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
+
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -90,13 +90,15 @@ fun PoliceHeaderComponent(finalMunicipalityForm: String) {
                 androidx.compose.material3.Text(
                     color = Color(0xFF000000),
                     fontSize = 15.sp,
-                    fontWeight = FontWeight.SemiBold,
+                    fontWeight = FontWeight.Bold,
                     maxLines = 1,
                     modifier = Modifier.padding(end = 4.dp),
                     overflow = TextOverflow.Ellipsis,
                     text = "Add a contact number"
                 )
                 IconButton(onClick = {
+                    createNewDocument.value = ""
+                    createNewNumber.value = ""
                     showDialog.value = true
                 }) {
                     Icon(
@@ -171,7 +173,6 @@ fun PoliceHeaderComponent(finalMunicipalityForm: String) {
 fun AdminPoliceScreen() {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     LocalInspectionMode.current
-    val containerColor = Color(0xFFFFD317)
     var selectedMunicipality by remember { mutableStateOf<Municipality?>(null) }
     val context = LocalContext.current
     remember { mutableStateOf(listOf<Municipality>()) }
@@ -238,7 +239,7 @@ fun AdminPoliceScreen() {
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "Police",
+                        text = "POLICE",
                         color = Color(0xFFFFFFFF),
                         style = androidx.compose.ui.text.TextStyle(
                             fontWeight = FontWeight.Bold,
@@ -249,17 +250,16 @@ fun AdminPoliceScreen() {
                     )
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-                val policeList by viewModel.police.observeAsState(initial = emptyList())
+                val policeList by viewModel.policee.observeAsState(initial = emptyList())
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight(.6f)
-                        .background(containerColor)
+                        .fillMaxHeight(1.0f)
                 ) {
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
+                            .padding(horizontal = 4.dp)
                     ) {
                         item {
                             if (policeList.isEmpty()) {
@@ -270,20 +270,28 @@ fun AdminPoliceScreen() {
                                     CircularProgressIndicator()
                                 }
                             } else {
-                                for (police in policeList) {
-                                    police.documentId
-                                    val contactNumber = police.contactNumber
+                                for (Police in policeList) {
+                                    Police.documentId
+                                    val contactNumber = Police.contactNumber
                                     var isEditing by remember { mutableStateOf(false) }
                                     Spacer(modifier = Modifier.height(5.dp))
-                                    Column {
+                                    Column(
+                                        modifier = Modifier
+                                            .background(Color(0xFFFFD317))
+                                            .padding(horizontal = 16.dp)
+                                            .padding(top = 5.dp)
+                                            .padding(bottom = 8.dp),
+                                    ) {
                                         Text(
-                                            text = police.documentId,
+                                            text = Police.documentId,
                                             color = Color.Black,
-                                            style = LocalTextStyle.current,
+                                            style = androidx.compose.ui.text.TextStyle(
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 15.sp
+                                            ),
                                             modifier = Modifier
-                                                .paddingFromBaseline(
-                                                    10.dp,
-                                                    0.dp
+                                                .padding(
+                                                    4.dp,
                                                 )
                                         )
                                         Row(
@@ -302,7 +310,7 @@ fun AdminPoliceScreen() {
                                                     .size(width = 165.dp, height = 40.dp)
                                                     .border(2.dp, Color.Black)
                                                     .background(Color.White),
-                                                contentAlignment = Alignment.Center
+                                                contentAlignment = Alignment.CenterStart
                                             ) {
                                                 Icon(
                                                     imageVector = Icons.Default.Edit,
@@ -318,9 +326,9 @@ fun AdminPoliceScreen() {
                                                         }
                                                 )
                                                 if (showDialog.value) {
-                                                    textFieldIdValue.value = police.documentId
+                                                    textFieldIdValue.value = Police.documentId
                                                     textFieldContactValue.value =
-                                                        police.contactNumber
+                                                        Police.contactNumber
                                                     AlertDialog(
                                                         onDismissRequest = {
                                                             showDialog.value = false
@@ -352,19 +360,19 @@ fun AdminPoliceScreen() {
                                                         confirmButton = {
                                                             Button(
                                                                 onClick = {
-                                                                    if (police.documentId != textFieldIdValue.value || police.contactNumber != textFieldContactValue.value) {
+                                                                    if (Police.documentId != textFieldIdValue.value || Police.contactNumber != textFieldContactValue.value) {
                                                                         val db = Firebase.firestore
                                                                         val docRef =
                                                                             db.collection("Emergency Contacts")
                                                                                 .document("$defaultMunicipalityName")
                                                                                 .collection("Police")
                                                                                 .document(
-                                                                                    police.documentId
+                                                                                    Police.documentId
                                                                                 )
                                                                         docRef.get()
                                                                             .addOnSuccessListener { snapshot ->
                                                                                 if (snapshot.exists()) {
-                                                                                    if (police.documentId != textFieldIdValue.value) {
+                                                                                    if (Police.documentId != textFieldIdValue.value) {
                                                                                         db
                                                                                             .collection(
                                                                                                 "Emergency Contacts"
@@ -373,10 +381,10 @@ fun AdminPoliceScreen() {
                                                                                                 "$defaultMunicipalityName"
                                                                                             )
                                                                                             .collection(
-                                                                                                "police"
+                                                                                                "Police"
                                                                                             )
                                                                                             .document(
-                                                                                                police.documentId
+                                                                                                Police.documentId
                                                                                             )
                                                                                             .delete()
                                                                                             .addOnSuccessListener {
@@ -386,7 +394,7 @@ fun AdminPoliceScreen() {
                                                                                                     textFieldContactValue.value
                                                                                                 if (contactNumber.isEmpty()) {
                                                                                                     contactNumber =
-                                                                                                        police.contactNumber
+                                                                                                        Police.contactNumber
                                                                                                 }
                                                                                                 db.collection(
                                                                                                     "Emergency Contacts"
@@ -395,7 +403,7 @@ fun AdminPoliceScreen() {
                                                                                                         "$defaultMunicipalityName"
                                                                                                     )
                                                                                                     .collection(
-                                                                                                        "police"
+                                                                                                        "Police"
                                                                                                     )
                                                                                                     .document(
                                                                                                         newDocumentId
@@ -412,12 +420,6 @@ fun AdminPoliceScreen() {
                                                                                                             ""
                                                                                                         showDialog.value =
                                                                                                             false
-                                                                                                        Toast.makeText(
-                                                                                                            context,
-                                                                                                            "Document updated successfully",
-                                                                                                            Toast.LENGTH_SHORT
-                                                                                                        )
-                                                                                                            .show()
                                                                                                     }
                                                                                             }
                                                                                     } else {
@@ -428,10 +430,10 @@ fun AdminPoliceScreen() {
                                                                                                 "$defaultMunicipalityName"
                                                                                             )
                                                                                             .collection(
-                                                                                                "police"
+                                                                                                "Police"
                                                                                             )
                                                                                             .document(
-                                                                                                police.documentId
+                                                                                                Police.documentId
                                                                                             )
                                                                                             .update(
                                                                                                 "contacts",
@@ -464,9 +466,13 @@ fun AdminPoliceScreen() {
                                                     )
                                                 } else {
                                                     androidx.compose.material3.Text(
-                                                        text = police.contactNumber,
+                                                        text = Police.contactNumber,
                                                         color = Color.Black,
-                                                        style = LocalTextStyle.current
+                                                        style = androidx.compose.ui.text.TextStyle(
+                                                            fontWeight = FontWeight.Bold,
+                                                            fontSize = 15.sp
+                                                        ),
+                                                        modifier = Modifier.padding(start = 10.dp)
                                                     )
                                                 }
                                             }
@@ -475,7 +481,7 @@ fun AdminPoliceScreen() {
                                                 contentDescription = null,
                                                 tint = Color.Black,
                                                 modifier = Modifier
-                                                    .size(24.dp)
+                                                    .size(40.dp)
                                                     .clickable {
                                                         if (defaultMunicipalityName != null) {
                                                             val db = Firebase.firestore
@@ -483,7 +489,7 @@ fun AdminPoliceScreen() {
                                                                 .collection("Emergency Contacts")
                                                                 .document("$defaultMunicipalityName")
                                                                 .collection("Police")
-                                                                .document(police.documentId)
+                                                                .document(Police.documentId)
                                                                 .delete()
                                                                 .addOnSuccessListener {
                                                                     isEditing = false
@@ -546,9 +552,7 @@ private fun sendLocationSMS(context: Context, location: Location, phoneNumber: S
     val latitude = location.latitude
     val longitude = location.longitude
     val mapsUrl = "https://www.google.com/maps?q=$latitude,$longitude"
-    val smsMessage =
-        "Help! I'm at Latitude: $latitude, Longitude: $longitude. Open in Google Maps: $mapsUrl"
-    SmsUtils.sendSMS(context, phoneNumber, smsMessage)
+    SmsUtils.sendSMS(context, phoneNumber, mapsUrl)
 }
 
 data class PoliceAdmin(
@@ -558,7 +562,7 @@ data class PoliceAdmin(
 
 class PoliceViewModel : ViewModel() {
     private val _police = MutableLiveData<List<PoliceAdmin>>()
-    val police: LiveData<List<PoliceAdmin>> = _police
+    val policee: LiveData<List<PoliceAdmin>> = _police
     private val db = Firebase.firestore
     fun getEmergencyPhoneNumber(finalMunicipalityForm: String) {
         db.collection("Emergency Contacts")

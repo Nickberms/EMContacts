@@ -19,10 +19,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.emcontacts.admin.AdminFirefightersScreen
-import com.example.emcontacts.admin.AdminMedicsScreen
-import com.example.emcontacts.admin.AdminRescuersScreen
 import com.example.emcontacts.admin.AdminHomeScreen
+import com.example.emcontacts.admin.AdminMedicsScreen
 import com.example.emcontacts.admin.AdminPoliceScreen
+import com.example.emcontacts.admin.AdminRescuersScreen
 
 import com.example.emcontacts.ui.theme.EMContactsTheme
 
@@ -55,8 +55,9 @@ sealed class Screen(val route: String) {
 
 
 
-class MainActivity : ComponentActivity() { 
+class MainActivity : ComponentActivity() {
     private val REQUEST_LOCATION_PERMISSION = 1
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -131,33 +132,45 @@ class MainActivity : ComponentActivity() {
 
                     composable(
                         route = "${Screen.MedicsScreen.route}/{municipalityName}",
-                        arguments = listOf(navArgument("municipalityName") { type = NavType.StringType })
+                        arguments = listOf(navArgument("municipalityName") {
+                            type = NavType.StringType
+                        })
                     ) { backStackEntry ->
-                        val municipalityName = backStackEntry.arguments?.getString("municipalityName")
-                        MedicsScreen(navController = navController, selectedMunicipality = municipalityName)
+                        val municipalityName =
+                            backStackEntry.arguments?.getString("municipalityName")
+                        MedicSscreen()
                     }
 
                     composable(
                         route = "${Screen.FirefightersScreen.route}/{municipalityName}",
-                        arguments = listOf(navArgument("municipalityName") { type = NavType.StringType })
+                        arguments = listOf(navArgument("municipalityName") {
+                            type = NavType.StringType
+                        })
                     ) { backStackEntry ->
-                        val municipalityName = backStackEntry.arguments?.getString("municipalityName")
+                        val municipalityName =
+                            backStackEntry.arguments?.getString("municipalityName")
                         FirefightersScreen()
                     }
 
                     composable(
                         route = "${Screen.PoliceScreen.route}/{municipalityName}",
-                        arguments = listOf(navArgument("municipalityName") { type = NavType.StringType })
+                        arguments = listOf(navArgument("municipalityName") {
+                            type = NavType.StringType
+                        })
                     ) { backStackEntry ->
-                        val municipalityName = backStackEntry.arguments?.getString("municipalityName")
-                        PoliceScreen(navController = navController, selectedMunicipality = municipalityName)
+                        val municipalityName =
+                            backStackEntry.arguments?.getString("municipalityName")
+                        PoliceScreen()
                     }
                     composable(
                         route = "${Screen.RescuersScreen.route}/{municipalityName}",
-                        arguments = listOf(navArgument("municipalityName") { type = NavType.StringType })
+                        arguments = listOf(navArgument("municipalityName") {
+                            type = NavType.StringType
+                        })
                     ) { backStackEntry ->
-                        val municipalityName = backStackEntry.arguments?.getString("municipalityName")
-                        RescuersScreen(navController = navController, selectedMunicipality = municipalityName)
+                        val municipalityName =
+                            backStackEntry.arguments?.getString("municipalityName")
+                        RescuerScreen()
                     }
 
 
@@ -165,23 +178,31 @@ class MainActivity : ComponentActivity() {
 
                     composable(
                         route = "${Screen.AdminMedicsScreen.route}/{municipalityName}",
-                        arguments = listOf(navArgument("municipalityName") { type = NavType.StringType })
+                        arguments = listOf(navArgument("municipalityName") {
+                            type = NavType.StringType
+                        })
                     ) { backStackEntry ->
-                        val municipalityName = backStackEntry.arguments?.getString("municipalityName")
-                        AdminMedicsScreen(navController = navController, selectedMunicipality = municipalityName)
+                        val municipalityName =
+                            backStackEntry.arguments?.getString("municipalityName")
+                        AdminMedicsScreen()
                     }
 
                     composable(
                         route = "${Screen.AdminFirefightersScreen.route}/{municipalityName}",
-                        arguments = listOf(navArgument("municipalityName") { type = NavType.StringType })
+                        arguments = listOf(navArgument("municipalityName") {
+                            type = NavType.StringType
+                        })
                     ) { backStackEntry ->
-                        val municipalityName = backStackEntry.arguments?.getString("municipalityName")
-                        AdminFirefightersScreen(navController = navController, selectedMunicipality = municipalityName)
+                        val municipalityName =
+                            backStackEntry.arguments?.getString("municipalityName")
+                        AdminFirefightersScreen()
                     }
 
                     composable(
                         route = "${Screen.AdminPoliceScreen.route}/{municipalityName}",
-                        arguments = listOf(navArgument("municipalityName") { type = NavType.StringType })
+                        arguments = listOf(navArgument("municipalityName") {
+                            type = NavType.StringType
+                        })
                     ) { backStackEntry ->
                         backStackEntry.arguments?.getString("municipalityName")
                         AdminPoliceScreen()
@@ -189,19 +210,20 @@ class MainActivity : ComponentActivity() {
 
                     composable(
                         route = "${Screen.AdminRescuersScreen.route}/{municipalityName}",
-                        arguments = listOf(navArgument("municipalityName") { type = NavType.StringType })
+                        arguments = listOf(navArgument("municipalityName") {
+                            type = NavType.StringType
+                        })
                     ) { backStackEntry ->
-                        val municipalityName = backStackEntry.arguments?.getString("municipalityName")
-                        AdminRescuersScreen(navController = navController, selectedMunicipality = municipalityName)
+                        val municipalityName =
+                            backStackEntry.arguments?.getString("municipalityName")
+                        AdminRescuersScreen()
+
+
                     }
-
-
-
-
-                }
 
                 }
 
             }
         }
     }
+}

@@ -63,7 +63,7 @@ data class FireAdmin(
 
 class FireViewModel : ViewModel() {
     private val _fire = MutableLiveData<List<FireAdmin>>()
-    val firefighterLive: LiveData<List<FireAdmin>> = _fire
+    val firefightersLive: LiveData<List<FireAdmin>> = _fire
     private val db = Firebase.firestore
     fun getEmergencyPhoneNumber(finalMunicipalityForm: String) {
         db.collection("Emergency Contacts")
@@ -99,7 +99,7 @@ fun FirefightersScreen() {
     val sharedPreferences = context.getSharedPreferences("municipality_prefs", Context.MODE_PRIVATE)
     val defaultMunicipalityName = sharedPreferences.getString("selected_municipality", "Valencia")
     remember { mutableStateOf<String?>(null) }
-    val navController = rememberNavController()
+    rememberNavController()
     val dialerLauncher: ActivityResultLauncher<Intent> = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) {
@@ -182,7 +182,7 @@ fun FirefightersScreen() {
                     )
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-                val fireListView by viewModel.firefighterLive.observeAsState(initial = emptyList())
+                val fireListView by viewModel.firefightersLive.observeAsState(initial = emptyList())
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()

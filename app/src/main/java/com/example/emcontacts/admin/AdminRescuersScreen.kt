@@ -5,8 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.location.Location
 import android.net.Uri
-import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -42,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.emcontacts.interfaces.DrawerComponent
 import com.example.emcontacts.interfaces.Municipality
@@ -60,18 +57,17 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.ui.unit.sp
 import com.example.emcontacts.interfaces.LocationMap
 import com.example.emcontacts.utils.LocationUtils
-
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 @Composable
-fun RescuersHeaderComponent(navController: NavController?, finalMunicipalityForm: String) {
+fun RescuersHeaderComponent(finalMunicipalityForm: String) {
     val showDialog = remember { mutableStateOf(false) }
-    val CreatedocumentNewId = remember { mutableStateOf("") }
-    val CreatecontactNewId = remember { mutableStateOf("") }
-
+    val createNewDocument = remember { mutableStateOf("") }
+    val createNewNumber = remember { mutableStateOf("") }
     TopAppBar(
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
             containerColor = Color(0xFFFFD317)
@@ -88,77 +84,57 @@ fun RescuersHeaderComponent(navController: NavController?, finalMunicipalityForm
             )
         },
         actions = {
-            // Add the plus icon
-            IconButton(
-                onClick = {
-                    showDialog.value = true
-                }
+            Row(
+                horizontalArrangement = Arrangement.End,
+                modifier = Modifier.padding(end = 10.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    horizontalArrangement = Arrangement.End,
-                    modifier = Modifier.padding(end = 10.dp),
-                    //    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Add a contact number",
-                        style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.Normal,
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 1
-                    )
-                    Spacer(modifier = Modifier.width(20.dp)) // Add space between text and icon
+                androidx.compose.material3.Text(
+                    color = Color(0xFF000000),
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    modifier = Modifier.padding(end = 4.dp),
+                    overflow = TextOverflow.Ellipsis,
+                    text = "Add a contact number"
+                )
+                IconButton(onClick = {
+                    createNewDocument.value = ""
+                    createNewNumber.value = ""
+                    showDialog.value = true
+                }) {
                     Icon(
-                        contentDescription = "ADD",
+                        contentDescription = "Add",
                         imageVector = Icons.Filled.Add,
-                        modifier = Modifier.size(32.dp),
+                        modifier = Modifier.size(38.dp),
                         tint = Color(0xFF000000)
                     )
                 }
-
             }
-
         }
     )
-
     if (showDialog.value) {
-        AlertDialog(
+        androidx.compose.material3.AlertDialog(
             onDismissRequest = {
                 showDialog.value = false
             },
-            title = { Text("Update Document Data") },
             text = {
                 Column {
                     OutlinedTextField(
-                        value = CreatedocumentNewId.value,
-                        onValueChange = { CreatedocumentNewId.value = it },
-                        label = { Text("New Document ID") },
+                        value = createNewDocument.value,
+                        onValueChange = { createNewDocument.value = it },
+                        label = { Text("Contact Name") },
                         singleLine = true
                     )
-
                     OutlinedTextField(
-                        value = CreatecontactNewId.value,
+                        value = createNewNumber.value,
                         onValueChange = { newValue ->
-                            // Limit the length to 11 digits
                             if (newValue.length <= 11) {
-                                CreatecontactNewId.value = newValue
-                            }
-
-                            // Validate the input
-                            if (newValue.isNotEmpty() && newValue.all { char -> char.isDigit() }) {
-                                if (newValue.length == 11) {
-                                    // Valid contact number
-                                } else {
-                                    Log.e(
-                                        "ContactNumber",
-                                        "Invalid contact number. Please enter a 11-digit number."
-                                    )
-                                }
-                            } else {
-                                Log.e("ContactNumber", "Please enter only digits.")
+                                createNewNumber.value = newValue
                             }
                         },
                         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                        label = { Text("Input Contact Number") },
+                        label = { Text("Contact Number") },
                         singleLine = true
                     )
                 }
@@ -166,33 +142,14 @@ fun RescuersHeaderComponent(navController: NavController?, finalMunicipalityForm
             confirmButton = {
                 Button(
                     onClick = {
-                        // Simulate document update logic
-                        if (CreatedocumentNewId.value.isNotEmpty()) {
-                            var db = Firebase.firestore
+                        if (createNewDocument.value.isNotEmpty()) {
+                            val db = Firebase.firestore
                             db.collection("Emergency Contacts")
-                                .document("$finalMunicipalityForm")
+                                .document(finalMunicipalityForm)
                                 .collection("Rescuers")
-                                .document(CreatedocumentNewId.value)
-                                .set(hashMapOf("contacts" to CreatecontactNewId.value,))
-                                .addOnSuccessListener {
-                                    Log.d("InsertDocument", "New document inserted successfully")
-                                    showDialog.value = false
-                                    CreatedocumentNewId.value = ""
-                                    CreatecontactNewId.value = ""
-                                    //       Toast.makeText(context, "Document updated successfully", Toast.LENGTH_SHORT).show()
-
-                                }
-                                .addOnFailureListener { e ->
-                                    Log.e(
-                                        "InsertDocument",
-                                        "Error inserting document",
-                                        e
-                                    )
-                                }
-
-                            Log.d("Document Update", "Updating document with new information...")
+                                .document(createNewDocument.value)
+                                .set(hashMapOf("contacts" to createNewNumber.value))
                             showDialog.value = false
-                            //    Toast.makeText(context, "Document updated successfully", Toast.LENGTH_SHORT).show()
                         }
                     }
                 ) {
@@ -206,149 +163,53 @@ fun RescuersHeaderComponent(navController: NavController?, finalMunicipalityForm
                     Text("Cancel")
                 }
             }
-
         )
     }
 }
 
-
-
-
-private fun sendLocationSMS(context: Context, location: Location, phoneNumber: String) {
-    val latitude = location.latitude
-    val longitude = location.longitude
-
-    // Create a Google Maps URL with the latitude and longitude
-    val mapsUrl = "https://www.google.com/maps?q=$latitude,$longitude"
-
-    // Create the SMS message with a hyperlink
-    val smsMessage = "Help! I'm at Latitude: $latitude, Longitude: $longitude. Open in Google Maps: $mapsUrl"
-
-    // Send SMS with the message
-    SmsUtils.sendSMS(context, phoneNumber, smsMessage)
-}
-
-
-data class RescuersAdmin(
-    val documentId: String,
-    val contactNumber: String,
-)
-
-class RescueViewModel : ViewModel() {
-
-    private val _rescue = MutableLiveData<List<RescuersAdmin>>()
-    private val RescuerLiveData = MutableLiveData<List<RescuersAdmin>>()
-    val rescuersList: LiveData<List<RescuersAdmin>> = _rescue
-
-    private val db = Firebase.firestore
-    private val TAG = "FireStore Data Retrieval"
-
-    fun getEmergencyPhoneNumber(finalMunicipalityForm: String) {
-        Log.d(TAG, "Retrieving emergency phone numbers for municipality: $finalMunicipalityForm")
-
-        db.collection("Emergency Contacts")
-            .document("$finalMunicipalityForm")
-            .collection("Rescuers")
-            .addSnapshotListener { snapshot, error ->
-                if (error != null) {
-                    Log.e(TAG, "Error retrieving rescuersList: ${error.message}", error)
-                    return@addSnapshotListener
-                }
-
-                val rescuersList = mutableListOf<RescuersAdmin>()
-                snapshot?.documents?.forEach { document ->
-                    val documentId = document.id
-                    val contactNumber = document.getString("contacts") ?: ""
-                    rescuersList.add(RescuersAdmin(documentId, contactNumber))
-
-                    Log.d(TAG, "Retrieved rescue: $documentId -> $contactNumber")
-                }
-
-                //    RescuerLiveData.setValue(rescuersList)
-                _rescue.postValue(rescuersList)
-            }
-    }
-
-}
-
-
-
-@SuppressLint("UnrememberedMutableState", "SuspiciousIndentation",
+@SuppressLint(
+    "UnrememberedMutableState", "SuspiciousIndentation",
     "StateFlowValueCalledInComposition"
 )
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-
-fun AdminRescuersScreen(navController: NavController?, selectedMunicipality: String?) {
+fun AdminRescuersScreen() {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
-    val isPreview = LocalInspectionMode.current
-    val containerColor = Color(0xFFFFD317)
+    LocalInspectionMode.current
     var selectedMunicipality by remember { mutableStateOf<Municipality?>(null) }
-
     val context = LocalContext.current
-    val municipalities = remember { mutableStateOf(listOf<Municipality>()) }
-    val scope = rememberCoroutineScope()
+    remember { mutableStateOf(listOf<Municipality>()) }
+    rememberCoroutineScope()
     val sharedPreferences = context.getSharedPreferences("municipality_prefs", Context.MODE_PRIVATE)
     val defaultMunicipalityName = sharedPreferences.getString("selected_municipality", "Valencia")
-    val finalMunicipalityForm = defaultMunicipalityName
-    var errorState by remember { mutableStateOf<String?>(null) }
-    // Call getEmergencyPhoneNumber within a composable function
-    val emergencyPhoneNumber = remember { mutableStateOf<String?>(null) }
-
-    Log.d("MedicPage", "Selected Municipality: $finalMunicipalityForm")
-
-    val navController = rememberNavController()
-
-    var selectedPhoneNumber by remember { mutableStateOf<String?>(null) }
-
+    remember { mutableStateOf<String?>(null) }
+    rememberNavController()
     val dialerLauncher: ActivityResultLauncher<Intent> = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        // Handle the result if needed
+    ) {
     }
-
-    // Create an instance of LocationHelper within the composable function
     val locationHelper = LocationUtils(context = LocalContext.current)
-    // State variable to hold the user's location
     var userLocation by remember { mutableStateOf<Location?>(null) }
-
-    //  var rescuersList = finalMunicipalityForm?.let { getEmergencyPhoneNumber(it) }
-
-
     val viewModel = RescueViewModel()
-    if (finalMunicipalityForm != null) {
-        viewModel.getEmergencyPhoneNumber(finalMunicipalityForm)
+    if (defaultMunicipalityName != null) {
+        viewModel.getEmergencyPhoneNumber(defaultMunicipalityName)
     }
-
-    // Call getDeviceLocation within a composable function
     LaunchedEffect(true) {
         locationHelper.getDeviceLocation { location ->
             userLocation = location
-            Log.d(
-                "Location_rescuePage",
-                "Latitude: ${location.latitude}, Longitude: ${location.longitude}"
-            )
         }
     }
-
     DisposableEffect(Unit) {
-        // Clean up when the composable is disposed
         onDispose {
             locationHelper.stopLocationUpdates()
         }
     }
-
     val mutableNewContactNumber = MutableStateFlow("")
-
-    val newrescueDocument = hashMapOf("contacts" to mutableNewContactNumber.value)
-
-
+    hashMapOf("contacts" to mutableNewContactNumber.value)
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
             DrawerComponent(drawerState) { municipality ->
                 selectedMunicipality = municipality
-                Log.d("LOCATION", "HomeScreen: $municipality")
             }
         }
     ) {
@@ -360,125 +221,98 @@ fun AdminRescuersScreen(navController: NavController?, selectedMunicipality: Str
             Column(
                 modifier = Modifier.padding(10.dp)
             ) {
-                if (finalMunicipalityForm != null) {
-                    RescuersHeaderComponent(navController, finalMunicipalityForm)
+                if (defaultMunicipalityName != null) {
+                    RescuersHeaderComponent(defaultMunicipalityName)
                 }
                 Spacer(modifier = Modifier.height(16.dp))
-
-                if (isPreview) {
-                    // Placeholder for the map in preview mode
-                    Box(
-                        contentAlignment = Alignment.Center,
+                selectedMunicipality?.let {
+                    LocationMap(
                         modifier = Modifier
-                            .background(Color(0xFFFFFFFF))
-                            .fillMaxWidth()
-                            .height(200.dp)
-                    ) {
-                        Text("Map Placeholder", textAlign = TextAlign.Center)
-                    }
-                } else {
-
-                    selectedMunicipality?.let { municipality ->
-                        LocationMap(
-                            modifier = Modifier
-                                .fillMaxHeight(0.3f),
-                            onLocationUpdate = {
-                            }
-                        )
-                    }
-
+                            .fillMaxHeight(0.3f),
+                        onLocationUpdate = {
+                        }
+                    )
                 }
-
                 Spacer(modifier = Modifier.height(8.dp))
-
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp), // Add padding as needed
+                        .padding(16.dp),
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "Rescue Contact Page",
-                        color = Color.White,
-                        style = LocalTextStyle.current,
+                        text = "RESCUERS",
+                        color = Color(0xFFFFFFFF),
+                        style = androidx.compose.ui.text.TextStyle(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp
+                        ),
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(horizontal = 16.dp)
-                        // Adjust the horizontal padding as needed
                     )
                 }
-
-
                 Spacer(modifier = Modifier.height(8.dp))
-
-                val rescuersListList by viewModel.rescuersList.observeAsState(initial = emptyList())
-
+                val rescuerList by viewModel.rescuersList.observeAsState(initial = emptyList())
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight(.6f)
-                        .background(containerColor) // Set the background color as needed
+                        .fillMaxHeight(1.0f)
                 ) {
-                    // Display the data fetched from Firestore
-
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
+                            .padding(horizontal = 4.dp)
                     ) {
                         item {
-
-
-                            if (rescuersListList.isEmpty()) {
-                                // Show placeholder text or view indicating no data
-                                Log.d("ViewModel", "AdminMedicPage: Empty")
-                                // Show loading indicator
+                            if (rescuerList.isEmpty()) {
                                 Box(
                                     modifier = Modifier.fillMaxSize(),
                                     contentAlignment = Alignment.Center,
                                 ) {
                                     CircularProgressIndicator()
                                 }
-
                             } else {
-                                for (rescue in rescuersListList) {
-                                    val documentId = rescue.documentId
-                                    var contactNumber = rescue.contactNumber
+                                for (rescuer in rescuerList) {
+                                    rescuer.documentId
+                                    val contactNumber = rescuer.contactNumber
                                     var isEditing by remember { mutableStateOf(false) }
                                     Spacer(modifier = Modifier.height(5.dp))
-
-                                    Column {
-
+                                    Column(
+                                        modifier = Modifier
+                                            .background(Color(0xFFFFD317))
+                                            .padding(horizontal = 16.dp)
+                                            .padding(top = 5.dp)
+                                            .padding(bottom = 8.dp),
+                                    ) {
                                         Text(
-                                            text = rescue.documentId,
+                                            text = rescuer.documentId,
                                             color = Color.Black,
-                                            style = LocalTextStyle.current,
+                                            style = androidx.compose.ui.text.TextStyle(
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 15.sp
+                                            ),
                                             modifier = Modifier
-                                                .paddingFromBaseline(
-                                                    10.dp,
-                                                    0.dp
+                                                .padding(
+                                                    4.dp,
                                                 )
                                         )
-
                                         Row(
                                             horizontalArrangement = Arrangement.SpaceBetween,
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .padding(5.dp),
                                         ) {
-
-
-                                            val editedContactNumber = remember { mutableStateOf(contactNumber) }
+                                            remember { mutableStateOf(contactNumber) }
                                             val showDialog = remember { mutableStateOf(false) }
                                             val textFieldIdValue = remember { mutableStateOf("") }
                                             val textFieldContactValue =
                                                 remember { mutableStateOf("") }
-
                                             Box(
                                                 modifier = Modifier
                                                     .size(width = 165.dp, height = 40.dp)
                                                     .border(2.dp, Color.Black)
                                                     .background(Color.White),
-                                                contentAlignment = Alignment.Center
+                                                contentAlignment = Alignment.CenterStart
                                             ) {
                                                 Icon(
                                                     imageVector = Icons.Default.Edit,
@@ -493,194 +327,132 @@ fun AdminRescuersScreen(navController: NavController?, selectedMunicipality: Str
                                                             showDialog.value = true
                                                         }
                                                 )
-
                                                 if (showDialog.value) {
-
-                                                    textFieldIdValue.value = rescue.documentId
+                                                    textFieldIdValue.value = rescuer.documentId
                                                     textFieldContactValue.value =
-                                                        rescue.contactNumber
-
+                                                        rescuer.contactNumber
                                                     AlertDialog(
                                                         onDismissRequest = {
                                                             showDialog.value = false
                                                         },
-                                                        title = { Text("Update Document Data") },
-
                                                         text = {
-                                                            // The form inside the AlertDialog
                                                             Column {
                                                                 OutlinedTextField(
                                                                     value = textFieldIdValue.value,
                                                                     onValueChange = {
                                                                         textFieldIdValue.value = it
                                                                     },
-                                                                    label = { Text("Changing  Document ID will result in deletion to re-update Document ID ") }
-
+                                                                    label = { Text("Contact Name") }
                                                                 )
-
                                                                 OutlinedTextField(
                                                                     value = textFieldContactValue.value,
                                                                     onValueChange = { newValue ->
-                                                                        // Limit the length to 11 digits
                                                                         if (newValue.length <= 11) {
                                                                             textFieldContactValue.value =
                                                                                 newValue
                                                                         }
-
-                                                                        // Validate the input
-                                                                        if (newValue.isNotEmpty() && newValue.all { char -> char.isDigit() }) {
-                                                                            if (newValue.length == 11) {
-                                                                                // Valid contact number
-                                                                            } else {
-                                                                                // Show error message
-                                                                                Log.e(
-                                                                                    "ContactNumber",
-                                                                                    "Invalid contact number. Please enter a 11-digit number."
-                                                                                )
-                                                                            }
-                                                                        } else {
-                                                                            // Show error message
-                                                                            Log.e(
-                                                                                "ContactNumber",
-                                                                                "Please enter only digits."
-                                                                            )
-                                                                        }
-
-
                                                                     },
-
                                                                     keyboardOptions = KeyboardOptions.Default.copy(
                                                                         keyboardType = KeyboardType.Number
                                                                     ),
-                                                                    label = { Text("Input Contact Number") }
-
+                                                                    label = { Text("Contact Number") }
                                                                 )
-
-                                                                // Add more form elements here if needed
                                                             }
                                                         },
                                                         confirmButton = {
                                                             Button(
                                                                 onClick = {
-                                                                    // Handle the form submission
-                                                                    if (rescue.documentId != textFieldIdValue.value || rescue.contactNumber != textFieldContactValue.value) {
+                                                                    if (rescuer.documentId != textFieldIdValue.value || rescuer.contactNumber != textFieldContactValue.value) {
                                                                         val db = Firebase.firestore
-
-                                                                        // Check if document ID is untainted
                                                                         val docRef =
                                                                             db.collection("Emergency Contacts")
-                                                                                .document("$finalMunicipalityForm")
+                                                                                .document("$defaultMunicipalityName")
                                                                                 .collection("Rescuers")
                                                                                 .document(
-                                                                                    rescue.documentId
+                                                                                    rescuer.documentId
                                                                                 )
                                                                         docRef.get()
                                                                             .addOnSuccessListener { snapshot ->
                                                                                 if (snapshot.exists()) {
-                                                                                    // Document exists and is not tainted
-                                                                                    if (rescue.documentId != textFieldIdValue.value) {
-
-                                                                                        // Document ID changed, delete and re-insert with updated data
-                                                                                        db.collection("Emergency Contacts")
-                                                                                            .document("$finalMunicipalityForm")
-                                                                                            .collection("Rescuers")
-                                                                                            .document(rescue.documentId)
+                                                                                    if (rescuer.documentId != textFieldIdValue.value) {
+                                                                                        db
+                                                                                            .collection(
+                                                                                                "Emergency Contacts"
+                                                                                            )
+                                                                                            .document(
+                                                                                                "$defaultMunicipalityName"
+                                                                                            )
+                                                                                            .collection(
+                                                                                                "Rescuers"
+                                                                                            )
+                                                                                            .document(
+                                                                                                rescuer.documentId
+                                                                                            )
                                                                                             .delete()
                                                                                             .addOnSuccessListener {
-
-                                                                                                Log.d(
-                                                                                                    "DeleteDocument",
-                                                                                                    "Document deleted successfully"
-                                                                                                )
-                                                                                                // Insert new data with updated document ID and contact number
-                                                                                                var newDocumentId = textFieldIdValue.value
-                                                                                                var contactNumber = textFieldContactValue.value
-
+                                                                                                val newDocumentId =
+                                                                                                    textFieldIdValue.value
+                                                                                                var contactNumber =
+                                                                                                    textFieldContactValue.value
                                                                                                 if (contactNumber.isEmpty()) {
-                                                                                                    // Use the existing contact number
-                                                                                                    contactNumber = rescue.contactNumber
-                                                                                                    //   newDocumentId = rescue.documentId
+                                                                                                    contactNumber =
+                                                                                                        rescuer.contactNumber
                                                                                                 }
-
-                                                                                                db.collection("Emergency Contacts")
-                                                                                                    .document("$finalMunicipalityForm")
-                                                                                                    .collection("Rescuers")
-                                                                                                    .document(textFieldIdValue.value)
-                                                                                                    .set(hashMapOf("contacts" to textFieldContactValue.value))
-                                                                                                    .addOnSuccessListener {
-                                                                                                        Log.d(
-                                                                                                            "InsertDocument",
-                                                                                                            "New document inserted successfully"
-                                                                                                        )
-                                                                                                        textFieldIdValue.value = ""
-                                                                                                        textFieldContactValue.value = ""
-                                                                                                        showDialog.value = false
-                                                                                                        Toast.makeText(context, "Document updated successfully", Toast.LENGTH_SHORT)
-                                                                                                            .show()
-
-                                                                                                    }
-                                                                                                    .addOnFailureListener { e ->
-                                                                                                        Log.e(
-                                                                                                            "InsertDocument",
-                                                                                                            "Error inserting document",
-                                                                                                            e
-                                                                                                        )
-                                                                                                    }
-                                                                                            }
-                                                                                            .addOnFailureListener { e ->
-                                                                                                Log.e(
-                                                                                                    "DeleteDocument",
-                                                                                                    "Error deleting document",
-                                                                                                    e
+                                                                                                db.collection(
+                                                                                                    "Emergency Contacts"
                                                                                                 )
+                                                                                                    .document(
+                                                                                                        "$defaultMunicipalityName"
+                                                                                                    )
+                                                                                                    .collection(
+                                                                                                        "Rescuers"
+                                                                                                    )
+                                                                                                    .document(
+                                                                                                        newDocumentId
+                                                                                                    )
+                                                                                                    .set(
+                                                                                                        hashMapOf(
+                                                                                                            "contacts" to contactNumber,
+                                                                                                        )
+                                                                                                    )
+                                                                                                    .addOnSuccessListener {
+                                                                                                        textFieldIdValue.value =
+                                                                                                            ""
+                                                                                                        textFieldContactValue.value =
+                                                                                                            ""
+                                                                                                        showDialog.value =
+                                                                                                            false
+                                                                                                    }
                                                                                             }
                                                                                     } else {
-
-
-                                                                                        // Only contact number changed, update existing document
-                                                                                        db.collection("Emergency Contacts")
-                                                                                            .document("$finalMunicipalityForm")
-                                                                                            .collection("Rescuers")
-                                                                                            .document(rescue.documentId)
-                                                                                            .update("contacts", textFieldContactValue.value)
+                                                                                        db.collection(
+                                                                                            "Emergency Contacts"
+                                                                                        )
+                                                                                            .document(
+                                                                                                "$defaultMunicipalityName"
+                                                                                            )
+                                                                                            .collection(
+                                                                                                "Rescuers"
+                                                                                            )
+                                                                                            .document(
+                                                                                                rescuer.documentId
+                                                                                            )
+                                                                                            .update(
+                                                                                                "contacts",
+                                                                                                textFieldContactValue.value
+                                                                                            )
                                                                                             .addOnSuccessListener {
-                                                                                                Log.d(
-                                                                                                    "UpdateContact",
-                                                                                                    "Contact number updated successfully"
-                                                                                                )
-                                                                                                showDialog.value = false
-                                                                                                textFieldIdValue.value = ""
-                                                                                                textFieldContactValue.value = ""
-                                                                                                Toast.makeText(context, "Contact number updated successfully", Toast.LENGTH_SHORT)
-                                                                                                    .show()
-                                                                                            }
-                                                                                            .addOnFailureListener { e ->
-                                                                                                Log.e(
-                                                                                                    "UpdateContact",
-                                                                                                    "Error updating contact number",
-                                                                                                    e
-                                                                                                )
+                                                                                                showDialog.value =
+                                                                                                    false
+                                                                                                textFieldIdValue.value =
+                                                                                                    ""
+                                                                                                textFieldContactValue.value =
+                                                                                                    ""
                                                                                             }
                                                                                     }
-                                                                                } else {
-                                                                                    // Document does not exist or is tainted
-                                                                                    // Show error message
-                                                                                    Toast.makeText(
-                                                                                        context,
-                                                                                        "Document not found or corrupted. Please try again.",
-                                                                                        Toast.LENGTH_SHORT
-                                                                                    ).show()
                                                                                 }
                                                                             }
-                                                                            .addOnFailureListener { e ->
-                                                                                Log.e(
-                                                                                    "GetDocument",
-                                                                                    "Error getting document",
-                                                                                    e
-                                                                                )
-                                                                            }
                                                                     }
-
                                                                 }
                                                             ) {
                                                                 Text("Submit")
@@ -694,62 +466,39 @@ fun AdminRescuersScreen(navController: NavController?, selectedMunicipality: Str
                                                             }
                                                         }
                                                     )
-
                                                 } else {
                                                     androidx.compose.material3.Text(
-                                                        text = rescue.contactNumber,
+                                                        text = rescuer.contactNumber,
                                                         color = Color.Black,
-                                                        style = LocalTextStyle.current
+                                                        style = androidx.compose.ui.text.TextStyle(
+                                                            fontWeight = FontWeight.Bold,
+                                                            fontSize = 15.sp
+                                                        ),
+                                                        modifier = Modifier.padding(start = 10.dp)
                                                     )
                                                 }
                                             }
-
-
                                             Icon(
                                                 imageVector = Icons.Default.Delete,
                                                 contentDescription = null,
                                                 tint = Color.Black,
                                                 modifier = Modifier
-                                                    .size(24.dp)
+                                                    .size(40.dp)
                                                     .clickable {
-                                                        // Delete the contact number from Firestore
-                                                        if (finalMunicipalityForm != null) {
+                                                        if (defaultMunicipalityName != null) {
                                                             val db = Firebase.firestore
-
                                                             db
                                                                 .collection("Emergency Contacts")
-                                                                .document("$finalMunicipalityForm")
+                                                                .document("$defaultMunicipalityName")
                                                                 .collection("Rescuers")
-                                                                .document(rescue.documentId)
+                                                                .document(rescuer.documentId)
                                                                 .delete()
                                                                 .addOnSuccessListener {
-                                                                    Log.d(
-                                                                        "DeleteNumber",
-                                                                        "Number deleted successfully"
-                                                                    )
                                                                     isEditing = false
-                                                                    Toast
-                                                                        .makeText(
-                                                                            context,
-                                                                            "Number Deleted Successfully",
-                                                                            Toast.LENGTH_SHORT
-                                                                        )
-                                                                        .show()
                                                                 }
-                                                                .addOnFailureListener { e ->
-                                                                    Log.e(
-                                                                        "DeleteNumber",
-                                                                        "Error deleting number",
-                                                                        e
-                                                                    )
-                                                                }
-                                                        } else {
-                                                            //         context.showToast("Error")
                                                         }
                                                     }
                                             )
-
-
                                             Icon(
                                                 imageVector = Icons.Default.LocationOn,
                                                 contentDescription = null,
@@ -758,23 +507,16 @@ fun AdminRescuersScreen(navController: NavController?, selectedMunicipality: Str
                                                     .size(40.dp)
                                                     .clickable {
                                                         userLocation?.let { location ->
-                                                            // Call a function to handle sending SMS with location and phone number
                                                             sendLocationSMS(
                                                                 context = context,
                                                                 location = location,
                                                                 phoneNumber = contactNumber
                                                             )
                                                         } ?: run {
-                                                            Log.w(
-                                                                "Clickable",
-                                                                "User location is null"
-                                                            )
                                                         }
                                                     }
                                             )
-
                                             Spacer(modifier = Modifier.width(2.dp))
-
                                             Icon(
                                                 imageVector = Icons.Default.Phone,
                                                 contentDescription = null,
@@ -782,7 +524,6 @@ fun AdminRescuersScreen(navController: NavController?, selectedMunicipality: Str
                                                 modifier = Modifier
                                                     .size(40.dp)
                                                     .clickable {
-                                                        // Launch the dialer here
                                                         val dialIntent = Intent(
                                                             Intent.ACTION_DIAL,
                                                             Uri.parse("tel:$contactNumber")
@@ -791,27 +532,55 @@ fun AdminRescuersScreen(navController: NavController?, selectedMunicipality: Str
                                                     }
                                             )
                                         }
-
                                     }
-
                                     Spacer(
                                         modifier = Modifier
                                             .height(1.dp)
                                             .fillMaxWidth()
                                             .background(Color.Black)
                                     )
-
                                     Spacer(modifier = Modifier.height(5.dp))
-
-
                                 }
                             }
                         }
-
                     }
                 }
             }
         }
+    }
+}
 
+private fun sendLocationSMS(context: Context, location: Location, phoneNumber: String) {
+    val latitude = location.latitude
+    val longitude = location.longitude
+    val mapsUrl = "https://www.google.com/maps?q=$latitude,$longitude"
+    SmsUtils.sendSMS(context, phoneNumber, mapsUrl)
+}
+
+data class RescuersAdmin(
+    val documentId: String,
+    val contactNumber: String,
+)
+
+class RescueViewModel : ViewModel() {
+    private val _rescue = MutableLiveData<List<RescuersAdmin>>()
+    val rescuersList: LiveData<List<RescuersAdmin>> = _rescue
+    private val db = Firebase.firestore
+    fun getEmergencyPhoneNumber(finalMunicipalityForm: String) {
+        db.collection("Emergency Contacts")
+            .document(finalMunicipalityForm)
+            .collection("Rescuers")
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    return@addSnapshotListener
+                }
+                val rescuersList = mutableListOf<RescuersAdmin>()
+                snapshot?.documents?.forEach { document ->
+                    val documentId = document.id
+                    val contactNumber = document.getString("contacts") ?: ""
+                    rescuersList.add(RescuersAdmin(documentId, contactNumber))
+                }
+                _rescue.postValue(rescuersList)
+            }
     }
 }
