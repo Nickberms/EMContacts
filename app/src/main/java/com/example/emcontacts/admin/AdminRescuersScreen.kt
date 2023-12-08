@@ -148,7 +148,7 @@ fun RescuersHeaderComponent(finalMunicipalityForm: String) {
                                 .document(finalMunicipalityForm)
                                 .collection("Rescuers")
                                 .document(createNewDocument.value)
-                                .set(hashMapOf("contacts" to createNewNumber.value))
+                                .set(hashMapOf("number" to createNewNumber.value))
                             showDialog.value = false
                         }
                     }
@@ -204,7 +204,7 @@ fun AdminRescuersScreen() {
         }
     }
     val mutableNewContactNumber = MutableStateFlow("")
-    hashMapOf("contacts" to mutableNewContactNumber.value)
+    hashMapOf("number" to mutableNewContactNumber.value)
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -412,7 +412,7 @@ fun AdminRescuersScreen() {
                                                                                                     )
                                                                                                     .set(
                                                                                                         hashMapOf(
-                                                                                                            "contacts" to contactNumber,
+                                                                                                            "number" to contactNumber,
                                                                                                         )
                                                                                                     )
                                                                                                     .addOnSuccessListener {
@@ -438,7 +438,7 @@ fun AdminRescuersScreen() {
                                                                                                 rescuer.documentId
                                                                                             )
                                                                                             .update(
-                                                                                                "contacts",
+                                                                                                "number",
                                                                                                 textFieldContactValue.value
                                                                                             )
                                                                                             .addOnSuccessListener {
@@ -577,7 +577,7 @@ class RescueViewModel : ViewModel() {
                 val rescuersList = mutableListOf<RescuersAdmin>()
                 snapshot?.documents?.forEach { document ->
                     val documentId = document.id
-                    val contactNumber = document.getString("contacts") ?: ""
+                    val contactNumber = document.getString("number") ?: ""
                     rescuersList.add(RescuersAdmin(documentId, contactNumber))
                 }
                 _rescue.postValue(rescuersList)

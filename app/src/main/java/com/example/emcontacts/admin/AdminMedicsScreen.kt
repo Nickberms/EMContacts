@@ -148,7 +148,7 @@ fun MedicsHeaderComponent(finalMunicipalityForm: String) {
                                 .document(finalMunicipalityForm)
                                 .collection("Medics")
                                 .document(createNewDocument.value)
-                                .set(hashMapOf("contacts" to createNewNumber.value))
+                                .set(hashMapOf("number" to createNewNumber.value))
                             showDialog.value = false
                         }
                     }
@@ -204,7 +204,7 @@ fun AdminMedicsScreen() {
         }
     }
     val mutableNewContactNumber = MutableStateFlow("")
-    hashMapOf("contacts" to mutableNewContactNumber.value)
+    hashMapOf("number" to mutableNewContactNumber.value)
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -412,7 +412,7 @@ fun AdminMedicsScreen() {
                                                                                                     )
                                                                                                     .set(
                                                                                                         hashMapOf(
-                                                                                                            "contacts" to contactNumber,
+                                                                                                            "number" to contactNumber,
                                                                                                         )
                                                                                                     )
                                                                                                     .addOnSuccessListener {
@@ -438,7 +438,7 @@ fun AdminMedicsScreen() {
                                                                                                 medic.documentId
                                                                                             )
                                                                                             .update(
-                                                                                                "contacts",
+                                                                                                "number",
                                                                                                 textFieldContactValue.value
                                                                                             )
                                                                                             .addOnSuccessListener {
@@ -577,7 +577,7 @@ class MedicViewModel : ViewModel() {
                 val medics = mutableListOf<MedicAdmin>()
                 snapshot?.documents?.forEach { document ->
                     val documentId = document.id
-                    val contactNumber = document.getString("contacts") ?: ""
+                    val contactNumber = document.getString("number") ?: ""
                     medics.add(MedicAdmin(documentId, contactNumber))
                 }
                 _medic.postValue(medics)

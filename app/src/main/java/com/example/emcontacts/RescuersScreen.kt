@@ -76,7 +76,7 @@ class RescuerViewModel : ViewModel() {
                 val RescueLIveData = mutableListOf<RescuerAdmin>()
                 snapshot?.documents?.forEach { document ->
                     val documentId = document.id
-                    val contactNumber = document.getString("contacts") ?: ""
+                    val contactNumber = document.getString("number") ?: ""
                     RescueLIveData.add(RescuerAdmin(documentId, contactNumber))
                 }
                 _rescue.postValue(RescueLIveData)

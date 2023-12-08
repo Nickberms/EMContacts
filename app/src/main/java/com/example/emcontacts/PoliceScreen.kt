@@ -76,7 +76,7 @@ class PoliceViewModel : ViewModel() {
                 val policeLiveData = mutableListOf<PoliceAdmin>()
                 snapshot?.documents?.forEach { document ->
                     val documentId = document.id
-                    val contactNumber = document.getString("contacts") ?: ""
+                    val contactNumber = document.getString("number") ?: ""
                     policeLiveData.add(PoliceAdmin(documentId, contactNumber))
                 }
                 _police.postValue(policeLiveData)

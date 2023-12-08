@@ -147,7 +147,7 @@ fun FirefightersHeaderComponent(finalMunicipalityForm: String) {
                                 .document(finalMunicipalityForm)
                                 .collection("Firefighters")
                                 .document(createNewDocument.value)
-                                .set(hashMapOf("contacts" to createNewNumber.value))
+                                .set(hashMapOf("number" to createNewNumber.value))
                             showDialog.value = false
                         }
                     }
@@ -203,7 +203,7 @@ fun AdminFirefightersScreen() {
         }
     }
     val mutableNewContactNumber = MutableStateFlow("")
-    hashMapOf("contacts" to mutableNewContactNumber.value)
+    hashMapOf("number" to mutableNewContactNumber.value)
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -411,7 +411,7 @@ fun AdminFirefightersScreen() {
                                                                                                     )
                                                                                                     .set(
                                                                                                         hashMapOf(
-                                                                                                            "contacts" to contactNumber,
+                                                                                                            "number" to contactNumber,
                                                                                                         )
                                                                                                     )
                                                                                                     .addOnSuccessListener {
@@ -437,7 +437,7 @@ fun AdminFirefightersScreen() {
                                                                                                 Firefighter.documentId
                                                                                             )
                                                                                             .update(
-                                                                                                "contacts",
+                                                                                                "number",
                                                                                                 textFieldContactValue.value
                                                                                             )
                                                                                             .addOnSuccessListener {
@@ -576,7 +576,7 @@ class FireViewModel : ViewModel() {
                 val firefighters = mutableListOf<FirefighterAdmin>()
                 snapshot?.documents?.forEach { document ->
                     val documentId = document.id
-                    val contactNumber = document.getString("contacts") ?: ""
+                    val contactNumber = document.getString("number") ?: ""
                     firefighters.add(FirefighterAdmin(documentId, contactNumber))
                 }
                 _firefighter.postValue(firefighters)

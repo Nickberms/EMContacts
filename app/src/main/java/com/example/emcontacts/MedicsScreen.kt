@@ -76,7 +76,7 @@ class MedicViewModel : ViewModel() {
                 val firefighterLive = mutableListOf<MedicAdmin>()
                 snapshot?.documents?.forEach { document ->
                     val documentId = document.id
-                    val contactNumber = document.getString("contacts") ?: ""
+                    val contactNumber = document.getString("number") ?: ""
                     firefighterLive.add(MedicAdmin(documentId, contactNumber))
                 }
                 _fire.postValue(firefighterLive)

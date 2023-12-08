@@ -146,7 +146,7 @@ fun PoliceHeaderComponent(finalMunicipalityForm: String) {
                                 .document(finalMunicipalityForm)
                                 .collection("Police")
                                 .document(createNewDocument.value)
-                                .set(hashMapOf("contacts" to createNewNumber.value))
+                                .set(hashMapOf("number" to createNewNumber.value))
                             showDialog.value = false
                         }
                     }
@@ -202,7 +202,7 @@ fun AdminPoliceScreen() {
         }
     }
     val mutableNewContactNumber = MutableStateFlow("")
-    hashMapOf("contacts" to mutableNewContactNumber.value)
+    hashMapOf("number" to mutableNewContactNumber.value)
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -410,7 +410,7 @@ fun AdminPoliceScreen() {
                                                                                                     )
                                                                                                     .set(
                                                                                                         hashMapOf(
-                                                                                                            "contacts" to contactNumber,
+                                                                                                            "number" to contactNumber,
                                                                                                         )
                                                                                                     )
                                                                                                     .addOnSuccessListener {
@@ -436,7 +436,7 @@ fun AdminPoliceScreen() {
                                                                                                 Police.documentId
                                                                                             )
                                                                                             .update(
-                                                                                                "contacts",
+                                                                                                "number",
                                                                                                 textFieldContactValue.value
                                                                                             )
                                                                                             .addOnSuccessListener {
@@ -575,7 +575,7 @@ class PoliceViewModel : ViewModel() {
                 val police = mutableListOf<PoliceAdmin>()
                 snapshot?.documents?.forEach { document ->
                     val documentId = document.id
-                    val contactNumber = document.getString("contacts") ?: ""
+                    val contactNumber = document.getString("number") ?: ""
                     police.add(PoliceAdmin(documentId, contactNumber))
                 }
                 _police.postValue(police)

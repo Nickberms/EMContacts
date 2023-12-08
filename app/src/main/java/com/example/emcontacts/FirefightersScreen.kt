@@ -76,7 +76,7 @@ class FireViewModel : ViewModel() {
                 val firefighterLive = mutableListOf<FireAdmin>()
                 snapshot?.documents?.forEach { document ->
                     val documentId = document.id
-                    val contactNumber = document.getString("contacts") ?: ""
+                    val contactNumber = document.getString("number") ?: ""
                     firefighterLive.add(FireAdmin(documentId, contactNumber))
                 }
                 _fire.postValue(firefighterLive)
